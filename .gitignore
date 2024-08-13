@@ -1,0 +1,8 @@
+# Vi swap files
+*.swp
+
+# Vscode config
+.vscode
+
+# ENV files
+.env
