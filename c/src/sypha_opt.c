@@ -18,35 +18,35 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "syphac/opt.h"
+#include "syphac/sypha_opt.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif // __cplusplus
 
-struct _opt_config_item {
+struct _sypha_opt_config_item {
     char * short_name;
     char * long_name;
     int is_flag;
     int is_required;
-    struct _opt_config_item * next;
+    struct _sypha_opt_config_item * next;
 };
 
-struct _opt_result_item {
+struct _sypha_opt_result_item {
     char * short_name;
     char * long_name;
     char * value;
-    struct _opt_result_item * next;
+    struct _sypha_opt_result_item * next;
 };
 
-struct _opt_result {
-    struct _opt_result_item * items;
+struct _sypha_opt_result {
+    struct _sypha_opt_result_item * items;
     char ** extras;
 };
 
 // Returns matching config or NULL if nothing found
-static struct _opt_config_item * opt_config_find(struct _opt_config_item * items, const char * token) {
-    struct _opt_config_item * result = NULL;
+static struct _sypha_opt_config_item * sypha_opt_config_find(struct _sypha_opt_config_item * items, const char * token) {
+    struct _sypha_opt_config_item * result = NULL;
 
     while (items) {
         if (strcmp(items->short_name, token) == 0 || strcmp(items->long_name, token) == 0) {
@@ -59,8 +59,8 @@ static struct _opt_config_item * opt_config_find(struct _opt_config_item * items
     return result;
 }
 
-OPT_CONFIG opt_config_add_param(OPT_CONFIG cfg, const char * short_name, const char * long_name, int is_flag, int is_required) {
-    struct _opt_config_item * item, * parent;
+SYPHA_OPT_CONFIG sypha_opt_config_add_param(SYPHA_OPT_CONFIG cfg, const char * short_name, const char * long_name, int is_flag, int is_required) {
+    struct _sypha_opt_config_item * item, * parent;
     
     // TODO: also check that second char is an alpha
     if (!short_name || strlen(short_name) != 2 || short_name[0] != '-') {
@@ -72,7 +72,7 @@ OPT_CONFIG opt_config_add_param(OPT_CONFIG cfg, const char * short_name, const c
         return NULL;
     }
 
-    if (!(item = (struct _opt_config_item *) malloc(sizeof(struct _opt_config_item)))) {
+    if (!(item = (struct _sypha_opt_config_item *) malloc(sizeof(struct _sypha_opt_config_item)))) {
         return NULL;
     }
     item->short_name = NULL;
@@ -89,20 +89,20 @@ OPT_CONFIG opt_config_add_param(OPT_CONFIG cfg, const char * short_name, const c
         return NULL;
     }
 
-    if ((parent = (struct _opt_config_item *) cfg)) {
+    if ((parent = (struct _sypha_opt_config_item *) cfg)) {
         while (parent->next) {
             parent = parent->next;
         }
         parent->next = item;
         return cfg;
     } else {
-        return (OPT_CONFIG) item;
+        return (SYPHA_OPT_CONFIG) item;
     }
 }
 
-void opt_config_free(OPT_CONFIG cfg) {
-    struct _opt_config_item * param, * next;
-    param = (struct _opt_config_item *) cfg;
+void sypha_opt_config_free(SYPHA_OPT_CONFIG cfg) {
+    struct _sypha_opt_config_item * param, * next;
+    param = (struct _sypha_opt_config_item *) cfg;
     while (param) {
         next = param->next;
         free(param->short_name);
@@ -112,10 +112,10 @@ void opt_config_free(OPT_CONFIG cfg) {
     }
 }
 
-void opt_config_print(OPT_CONFIG cfg) {
-    struct _opt_config_item * param = (struct _opt_config_item *) cfg;
+void sypha_opt_config_print(SYPHA_OPT_CONFIG cfg) {
+    struct _sypha_opt_config_item * param = (struct _sypha_opt_config_item *) cfg;
 
-    printf("OPT_CONFIG:\n{\n");
+    printf("SYPHA_OPT_CONFIG:\n{\n");
     while (param) {
         printf("\t{ %s, %s, %s, %s }\n", param->short_name, param->long_name, 
             ((param->is_flag) ? "flag" : "non-flag"), ((param->is_required) ? "required" : "optional"));
@@ -124,11 +124,11 @@ void opt_config_print(OPT_CONFIG cfg) {
     printf("}\n");
 }
 
-static int validate_required_in_result(struct _opt_result * result, struct _opt_config_item * config) {
+static int sypha_validate_required_in_result(struct _sypha_opt_result * result, struct _sypha_opt_config_item * config) {
     // Go through config, see if each required param is present
     while (config) {
         if (config->is_required) {
-            if (!opt_parse_get(result, config->short_name)) {
+            if (!sypha_opt_parse_get(result, config->short_name)) {
                 return 0;
             }
         }
@@ -138,11 +138,11 @@ static int validate_required_in_result(struct _opt_result * result, struct _opt_
     return 1;
 }
 
-OPT_PARSE_RESULT opt_parse_args(OPT_CONFIG cfg, int argc, char ** argv) {
-    struct _opt_result * result;
-    struct _opt_config_item * config_items = (struct _opt_config_item *) cfg;
+SYPHA_OPT_PARSE_RESULT sypha_opt_parse_args(SYPHA_OPT_CONFIG cfg, int argc, char ** argv) {
+    struct _sypha_opt_result * result;
+    struct _sypha_opt_config_item * config_items = (struct _sypha_opt_config_item *) cfg;
 
-    if (!(result = (struct _opt_result *) malloc(sizeof(struct _opt_result)))) {
+    if (!(result = (struct _sypha_opt_result *) malloc(sizeof(struct _sypha_opt_result)))) {
         return NULL;
     }
     result->items = NULL;
@@ -150,16 +150,16 @@ OPT_PARSE_RESULT opt_parse_args(OPT_CONFIG cfg, int argc, char ** argv) {
 
     size_t extras_size = argc * sizeof(char *);
     if (!(result->extras = (char **) malloc(extras_size))) {
-        opt_parse_free(result);
+        sypha_opt_parse_free(result);
         return NULL;
     }
     memset(result->extras, 0x0, extras_size);
 
     int extras_count = 0;
     int last_needs_value = 0;
-    struct _opt_config_item * config_item = NULL;
-    struct _opt_result_item * result_item = NULL;
-    struct _opt_result_item * last_result_item = NULL;
+    struct _sypha_opt_config_item * config_item = NULL;
+    struct _sypha_opt_result_item * result_item = NULL;
+    struct _sypha_opt_result_item * last_result_item = NULL;
 
     // Start at index 1 to skip the program name
     for (int i=1; i < argc; i++) {
@@ -169,9 +169,9 @@ OPT_PARSE_RESULT opt_parse_args(OPT_CONFIG cfg, int argc, char ** argv) {
         // -X ?
         if (argLen == 2 && arg[0] == '-') {
             // find it
-            if ((config_item = opt_config_find(config_items, arg))) {
-                if (!(result_item = (struct _opt_result_item *) malloc(sizeof(struct _opt_result_item)))) {
-                    opt_parse_free(result);
+            if ((config_item = sypha_opt_config_find(config_items, arg))) {
+                if (!(result_item = (struct _sypha_opt_result_item *) malloc(sizeof(struct _sypha_opt_result_item)))) {
+                    sypha_opt_parse_free(result);
                     return NULL;
                 }
                 result_item->short_name = NULL;
@@ -181,7 +181,7 @@ OPT_PARSE_RESULT opt_parse_args(OPT_CONFIG cfg, int argc, char ** argv) {
                 result_item->short_name = strdup(config_item->short_name);
                 result_item->long_name = strdup(config_item->long_name);
                 if (!result_item->short_name || !result_item->long_name) {
-                    opt_parse_free(result);
+                    sypha_opt_parse_free(result);
                     return NULL;
                 }
                 if (last_result_item == NULL) {
@@ -194,7 +194,7 @@ OPT_PARSE_RESULT opt_parse_args(OPT_CONFIG cfg, int argc, char ** argv) {
                 continue;
             } else {
                 // unknown param
-                opt_parse_free(result);
+                sypha_opt_parse_free(result);
                 return NULL;
             }
         }
@@ -202,9 +202,9 @@ OPT_PARSE_RESULT opt_parse_args(OPT_CONFIG cfg, int argc, char ** argv) {
         // --XYZ ?
         if (argLen > 2 && arg[0] == '-' && arg[1] == '-') {
            // find it
-            if ((config_item = opt_config_find(config_items, arg))) {
-                if (!(result_item = (struct _opt_result_item *) malloc(sizeof(struct _opt_result_item)))) {
-                    opt_parse_free(result);
+            if ((config_item = sypha_opt_config_find(config_items, arg))) {
+                if (!(result_item = (struct _sypha_opt_result_item *) malloc(sizeof(struct _sypha_opt_result_item)))) {
+                    sypha_opt_parse_free(result);
                     return NULL;
                 }
                 result_item->short_name = NULL;
@@ -214,7 +214,7 @@ OPT_PARSE_RESULT opt_parse_args(OPT_CONFIG cfg, int argc, char ** argv) {
                 result_item->short_name = strdup(config_item->short_name);
                 result_item->long_name = strdup(config_item->long_name);
                 if (!result_item->short_name || !result_item->long_name) {
-                    opt_parse_free(result);
+                    sypha_opt_parse_free(result);
                     return NULL;
                 }
                 if (last_result_item == NULL) {
@@ -227,39 +227,39 @@ OPT_PARSE_RESULT opt_parse_args(OPT_CONFIG cfg, int argc, char ** argv) {
                 continue;
             } else {
                 // unknown param
-                opt_parse_free(result);
+                sypha_opt_parse_free(result);
                 return NULL;
             }
         }
 
         if (last_needs_value) {
             if (!(result_item->value = strdup(arg))) {
-                opt_parse_free(result);
+                sypha_opt_parse_free(result);
                 return NULL;
             }
             last_needs_value = 0;
         } else {
             // add it to rando token list
             if (!(result->extras[extras_count] = strdup(arg))) {
-                opt_parse_free(result);
+                sypha_opt_parse_free(result);
                 return NULL;
             }
             extras_count++;
         }
     }
 
-    if (!validate_required_in_result(result, config_items)) {
-        opt_parse_free(result);
+    if (!sypha_validate_required_in_result(result, config_items)) {
+        sypha_opt_parse_free(result);
         return NULL;
     }
 
     return result;
 }
 
-void opt_parse_free(OPT_PARSE_RESULT parse_result) {
+void sypha_opt_parse_free(SYPHA_OPT_PARSE_RESULT parse_result) {
     char ** extras;
-    struct _opt_result_item * item, * item_next;
-    struct _opt_result * opt_result = (struct _opt_result *) parse_result;
+    struct _sypha_opt_result_item * item, * item_next;
+    struct _sypha_opt_result * opt_result = (struct _sypha_opt_result *) parse_result;
 
     if (!opt_result) {
         return;
@@ -289,12 +289,12 @@ void opt_parse_free(OPT_PARSE_RESULT parse_result) {
     free(opt_result);
 }
 
-const char * opt_parse_get(OPT_PARSE_RESULT parse_result, const char * name) {
-    struct _opt_result * result;
-    struct _opt_result_item * items;
+const char * sypha_opt_parse_get(SYPHA_OPT_PARSE_RESULT parse_result, const char * name) {
+    struct _sypha_opt_result * result;
+    struct _sypha_opt_result_item * items;
     const char * value;
 
-    if (!(result = (struct _opt_result *) parse_result)) {
+    if (!(result = (struct _sypha_opt_result *) parse_result)) {
         return NULL;
     }
 
@@ -311,25 +311,25 @@ const char * opt_parse_get(OPT_PARSE_RESULT parse_result, const char * name) {
     return value;
 }
 
-const char ** opt_parse_get_extras(OPT_PARSE_RESULT parse_result) {
-    struct _opt_result * result;
+const char ** sypha_opt_parse_get_extras(SYPHA_OPT_PARSE_RESULT parse_result) {
+    struct _sypha_opt_result * result;
     
-    if (!(result = (struct _opt_result *) parse_result)) {
+    if (!(result = (struct _sypha_opt_result *) parse_result)) {
         return NULL;
     }
 
     return (const char **) result->extras;
 }
 
-void opt_parse_print(OPT_PARSE_RESULT parse_result) {
-    struct _opt_result * result;
+void sypha_opt_parse_print(SYPHA_OPT_PARSE_RESULT parse_result) {
+    struct _sypha_opt_result * result;
     
-    printf("OPT_PARSE_RESULT:\n{\n");
-    if (!(result = (struct _opt_result *) parse_result)) {
+    printf("SYPHA_OPT_PARSE_RESULT:\n{\n");
+    if (!(result = (struct _sypha_opt_result *) parse_result)) {
         return;
     }
 
-    struct _opt_result_item * items = result->items;
+    struct _sypha_opt_result_item * items = result->items;
     while (items) {
         printf("\t{ \"%s\" | \"%s\" => ", items->short_name, items->long_name);
         if (items->value) {

@@ -49,20 +49,20 @@ clean-build: clean build
 
 build: libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION) libsyphac.so.$(MAJOR_VERSION).$(MINOR_VERSION)
 
-out/opt.o: src/opt.c
+out/sypha_opt.o: src/sypha_opt.c
 	mkdir -p out
 	$(C_COMPILER) $(INCLUDES) $(ALL_C_FLAGS) -o $@ -c $<
 
-out/env.o: src/env.c
+out/sypha_env.o: src/sypha_env.c
 	mkdir -p out
 	$(C_COMPILER) $(INCLUDES) $(ALL_C_FLAGS) -o $@ -c $<
 
-libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION): out/opt.o out/env.o
+libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o
 	ar cr $@ $+
 	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	mv $@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 
-libsyphac.so.$(MAJOR_VERSION).$(MINOR_VERSION): out/opt.o out/env.o
+libsyphac.so.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o
 	$(C_COMPILER) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -shared -o $@ $+ $(LIBRARIES)
 	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	mv $@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)

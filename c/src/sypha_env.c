@@ -15,7 +15,7 @@
  * limitations under the License.
 */
 
-#include "syphac/env.h"
+#include "syphac/sypha_env.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,7 +31,7 @@
 extern "C" {
 #endif // __cplusplus
 
-void env_load_dot_env() {
+void sypha_env_load_dot_env() {
     char buffer[BUFFER_SZ];
     size_t element_sz = sizeof(char);
     char key[MAX_KEY_LEN + 1];

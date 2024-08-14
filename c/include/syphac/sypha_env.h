@@ -1,4 +1,4 @@
-/* syphac.h
+/* sypha_env.h
  *
  * Copyright 2024 David Tuttle
  *
@@ -15,18 +15,25 @@
  * limitations under the License.
 */
 
-#ifndef _SYPHAC_H_
-#define _SYPHAC_H_
+#ifndef _SYPHA_ENV_H_
+#define _SYPHA_ENV_H_
 
 #if defined __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-#include "sypha/env.h"
-#include "sypha/opt.h"
+// Supports an ASCII .env file and uses c-string {set, get}env API
+
+// Artificially restrict size of values in our .env support to reasonable limits
+#define MAX_KEY_LEN     1024
+#define MAX_VALUE_LEN   10240
+
+// looks for a .env file in the current directory and writes its contents to
+// the program's environment. 
+extern void sypha_env_load_dot_env();
 
 #if defined __cplusplus
 }
 #endif // __cplusplus
 
-#endif // _SYPHAC_H_
+#endif // _SYPHA_ENV_H_
