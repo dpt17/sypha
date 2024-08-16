@@ -23,7 +23,7 @@ TARGET_ARCH ?= x86_64
 TARGET_SZ ?= 64
 TARGET_OS ?= linux
 
-C_COMPILER ?= gcc-12
+C_COMPILER ?= gcc
 C_FLAGS :=
 
 ifeq ($(dbg),1)
