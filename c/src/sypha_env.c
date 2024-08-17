@@ -86,7 +86,7 @@ void sypha_env_load_dot_env() {
                         // write KVP
                         key[key_byte_count] = '\0';
                         value[value_byte_count] = '\0';
-                        if (setenv(key, value, 1) < 0) {
+                        if (sypha_env_set(key, value, 1) < 0) {
                             // TODO: handle error?
                         }
                     }

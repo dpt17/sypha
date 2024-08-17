@@ -1,4 +1,4 @@
-/* opt.c
+/* sypha_opt.c
  *
  * Copyright 2024 David Tuttle
  *

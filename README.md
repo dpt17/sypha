@@ -19,6 +19,8 @@ Add /usr/local/sypha/include to your include path and /usr/local/sypha/lib to yo
 
 # libsyphacpp - C++
 
+Note: libsyphacpp depends on libsyphac and the latter should be built first
+
 $ cd cpp
 
 $ make

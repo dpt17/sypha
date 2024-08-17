@@ -18,11 +18,15 @@
 #ifndef _SYPHA_ENV_H_
 #define _SYPHA_ENV_H_
 
+#include <stdlib.h>
+
 #if defined __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-// Supports an ASCII .env file and uses c-string {set, get}env API
+// Supports an ASCII .env file and uses c-string {set, get} env API behind the scenes.
+// Users have a choice: a) use only the load function and keep using the standard env API
+// elsewhere in their code or b) use the wrapper functions as well for future proofing 
 
 // Artificially restrict size of values in our .env support to reasonable limits
 #define MAX_KEY_LEN     1024
@@ -31,6 +35,10 @@ extern "C" {
 // looks for a .env file in the current directory and writes its contents to
 // the program's environment. 
 extern void sypha_env_load_dot_env();
+
+// Wrap standard {set, get} env API to allow for future flexibility
+#define sypha_env_get(key)                         getenv(key)
+#define sypha_env_set(key, value, overwrite)       setenv(key, value, overwrite)
 
 #if defined __cplusplus
 }
