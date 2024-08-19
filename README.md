@@ -1,5 +1,5 @@
 # sypha
-Collection of utility code in various programming languages
+Collection of utility code and tools in various programming languages built for varied purposes (i.e. not a focused application).
 
 git clone https://github.com/dpt17/sypha
 
