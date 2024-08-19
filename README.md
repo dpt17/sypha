@@ -1,5 +1,5 @@
 # sypha
-Collection of utility code in various programming languages
+Collection of utility code and tools in various programming languages built for varied purposes (i.e. not a focused application).
 
 git clone https://github.com/dpt17/sypha
 
@@ -37,4 +37,10 @@ Add /usr/local/sypha/include to your include path and /usr/local/sypha/lib to yo
 
 TODO
 
-Note: other languages will be added as needed
+# tools
+
+A collection of scripts and/or tiny apps that don't merit their own focused repo
+
+
+
+Note: other languages will be added in due course
