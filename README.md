@@ -37,4 +37,8 @@ Add /usr/local/sypha/include to your include path and /usr/local/sypha/lib to yo
 
 TODO
 
-Note: other languages will be added as needed
+# tools
+
+A collection of scripts and/or tiny apps that don't merit their own focused repo
+
+Note: other languages will be added in due course
