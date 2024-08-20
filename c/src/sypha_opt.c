@@ -350,4 +350,4 @@ void sypha_opt_parse_print(SYPHA_OPT_PARSE_RESULT parse_result) {
 
 #if defined(__cplusplus)
 }
-#endif /* __cplusplus */
+#endif // __cplusplus
