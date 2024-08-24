@@ -16,6 +16,7 @@
 */
 
 #include <stdlib.h>
+#include <memory.h>
 #include "syphac/sypha_list.h"
 
 #if defined(__cplusplus)
@@ -24,7 +25,7 @@ extern "C" {
 
 struct _sypha_list_item {
     void * data;
-    size_t * data_sz;
+    size_t data_sz;
     
     struct _sypha_list_item * prev;
     struct _sypha_list_item * next;

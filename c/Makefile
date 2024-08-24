@@ -57,12 +57,16 @@ out/sypha_env.o: src/sypha_env.c
 	mkdir -p out
 	$(C_COMPILER) $(INCLUDES) $(ALL_C_FLAGS) -o $@ -c $<
 
-libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o
+out/sypha_list.o: src/sypha_list.c
+	mkdir -p out
+	$(C_COMPILER) $(INCLUDES) $(ALL_C_FLAGS) -o $@ -c $<
+
+libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o out/sypha_list.o
 	ar cr $@ $+
 	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	mv $@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 
-libsyphac.so.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o
+libsyphac.so.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o out/sypha_list.o
 	$(C_COMPILER) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -shared -o $@ $+ $(LIBRARIES)
 	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	mv $@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
