@@ -90,3 +90,19 @@ uninstall:
 	rm -fr $(INSTALL_DIR)/sypha/include/syphac
 	rm -fr $(INSTALL_DIR)/sypha/lib/libsyphac.a
 	rm -fr $(INSTALL_DIR)/sypha/lib/libsyphac.so*
+
+# Test case sections.  Hard references to g++ here for doctest.
+
+out/test_main.o: test/src/test_main.cpp
+	mkdir -p out
+	g++ -I./include -Itest/include -o $@ -c $<
+
+out/test_env.o: test/src/test_env.cpp
+	mkdir -p out
+	g++ -I./include -Itest/include -o $@ -c $<
+
+test: out/test_main.o out/test_env.o 
+	g++ -I./include -Itest/include -o libsyphac_$@ $+ -Lbin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE) -l:libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION)
+	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+	mv libsyphac_$@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+	bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac_$@
