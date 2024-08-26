@@ -166,14 +166,27 @@ void sypha_list_destroy_iterator(SYPHA_LIST_ITERATOR iterator) {
     free(_iterator);
 }
 
-void * sypha_list_iterator_next(SYPHA_LIST_ITERATOR iterator, size_t * data_sz) {
+void * sypha_list_iterator_get(SYPHA_LIST_ITERATOR iterator, size_t * data_sz) {
+    struct _sypha_list_iterator * _iterator = (struct _sypha_list_iterator *) iterator;
+    struct _sypha_list_item * curr = _iterator->curr;
+
+    // Iterator not started OR empty list
+    if (_iterator->is_pristine || !curr) {
+        return NULL;
+    }
+
+    *data_sz = curr->data_sz;
+    return curr->data;
+}
+
+int sypha_list_iterator_next(SYPHA_LIST_ITERATOR iterator) {
     struct _sypha_list_iterator * _iterator = (struct _sypha_list_iterator *) iterator;
     struct _sypha_list_item * curr = _iterator->curr;
     struct _sypha_list_item * next;
 
     // Empty list case
     if (!curr) {
-        return NULL;
+        return -1;
     }
 
     // Advance the iterator to the next, which depends on the
@@ -183,33 +196,32 @@ void * sypha_list_iterator_next(SYPHA_LIST_ITERATOR iterator, size_t * data_sz) 
 
         // We hit the "end", return NULL and stay where we are
         if (!next) {
-            return NULL;
+            return -1;
         }
 
         // Fully move
-        curr = next;
+        _iterator->curr = next;
     } else {
         // else we were in the initial state so don't move and clense that state
         _iterator->is_pristine = 0;
     }
 
-    *data_sz = curr->data_sz;
-    return curr->data;
+    return 0;
 }
 
-void * sypha_list_iterator_previous(SYPHA_LIST_ITERATOR iterator, size_t * data_sz) {
+int sypha_list_iterator_previous(SYPHA_LIST_ITERATOR iterator) {
     struct _sypha_list_iterator * _iterator = (struct _sypha_list_iterator *) iterator;
     struct _sypha_list_item * curr = _iterator->curr;
     struct _sypha_list_item * next;
 
     // Empty list case
     if (!curr) {
-        return NULL;
+        return -1;
     }
 
     if (_iterator->is_pristine) {
         // You can't move to the previous node from the initial state
-        return NULL;
+        return -1;
     }
 
     // Advance the iterator to the previous, which depends on the
@@ -218,114 +230,165 @@ void * sypha_list_iterator_previous(SYPHA_LIST_ITERATOR iterator, size_t * data_
 
     // We hit the "end", return NULL and stay where we are
     if (!next) {
-        return NULL;
+        return -1;
     }
 
     // Fully move
-    curr = next;
+    _iterator->curr = next;
 
-    *data_sz = curr->data_sz;
-    return curr->data;
+    return 0;
 }
 
-void sypha_list_iterator_insert_after(SYPHA_LIST_ITERATOR iterator, void * data, size_t data_sz) {
+int sypha_list_iterator_insert_after(SYPHA_LIST_ITERATOR iterator, void * data, size_t data_sz) {
     struct _sypha_list_iterator * _iterator = (struct _sypha_list_iterator *) iterator;
     struct _sypha_list_item * curr = _iterator->curr;
     struct _sypha_list * _list = (struct _sypha_list *) _iterator->list;
 
-    // Can't add anything from initial state
-    if (_iterator->is_pristine) {
-        return;
-    }
+    // You can add an item from initial state since it is suppose to be one behind it.  So allow this
+    // and leave the initial state in tact so next() still has to be called.
 
     struct _sypha_list_item * list_item;
     if (!(list_item = (struct _sypha_list_item *) malloc(sizeof(struct _sypha_list_item)))) {
-        return;
+        return -1;
     }
 
     if (!(list_item->data = (void *) malloc(sizeof(data_sz)))) {
         free(list_item);
-        return;
+        return -1;
     }
     memcpy(list_item->data, data, data_sz);
     list_item->data_sz = data_sz;
 
-    list_item->prev = curr;
-
     if (curr) {
-        list_item->next = curr->next;
-        if (curr->next) {
-            curr->next->prev = list_item;
+        // If we haven't moved yet, this is sort of a prepend
+        if (_iterator->is_pristine) {
+            if (_iterator->forward) {
+                list_item->prev = NULL;
+                list_item->next = curr;
+                curr->prev = list_item;
+                _list->first = list_item;
+                _iterator->curr = list_item;
+            } else {
+                list_item->next = NULL;
+                list_item->prev = curr;
+                curr->next = list_item;
+                _list->last = list_item;
+                _iterator->curr = list_item;
+            }
+        } else {
+            if (_iterator->forward) {
+                list_item->prev = curr;
+                list_item->next = curr->next;
+                if (curr->next) {
+                    curr->next->prev = list_item;
+                }
+                curr->next = list_item;
+
+                // is new item now the last one?
+                if (_list->last == curr) {
+                    _list->last = list_item;
+                }
+            } else {
+                list_item->next = curr;
+                list_item->prev = curr->prev;
+                if (curr->prev) {
+                    curr->prev->next = list_item;
+                }
+                curr->prev = list_item;
+
+                // is new item now the first one?
+                if (_list->first == curr) {
+                    _list->first = list_item;
+                }
+            }
         }
-        curr->next = list_item;
     } else {
+        // add to an empty list?
+        _iterator->curr = list_item;
+        _list->first = list_item;
+        list_item->prev = NULL;
+        _list->last = list_item;
         list_item->next = NULL;
     }
 
-    // is new item now the last one?
-    if (_list->last == curr) {
-        _list->last = list_item;
-    }
-
     _list->count++;
+
+    return 0;
 }
 
-void sypha_list_iterator_insert_before(SYPHA_LIST_ITERATOR iterator, void * data, size_t data_sz) {
+int sypha_list_iterator_insert_before(SYPHA_LIST_ITERATOR iterator, void * data, size_t data_sz) {
     struct _sypha_list_iterator * _iterator = (struct _sypha_list_iterator *) iterator;
     struct _sypha_list_item * curr = _iterator->curr;
     struct _sypha_list * _list = (struct _sypha_list *) _iterator->list;
 
-    // Can't add anything from initial state
+    // Can't add anything from initial state.  Regardless of moving forward or backward, the iterator
+    // is intially positioned "before" a first item so adding BEFORE THAT doesn't make sense.
     if (_iterator->is_pristine) {
-        return;
+        return -1;
     }
 
     struct _sypha_list_item * list_item;
     if (!(list_item = (struct _sypha_list_item *) malloc(sizeof(struct _sypha_list_item)))) {
-        return;
+        return -1;
     }
 
     if (!(list_item->data = (void *) malloc(sizeof(data_sz)))) {
         free(list_item);
-        return;
+        return -1;
     }
     memcpy(list_item->data, data, data_sz);
     list_item->data_sz = data_sz;
 
-    list_item->next = curr;
-
     if (curr) {
-        list_item->prev = curr->prev;
-        if (curr->prev) {
-            curr->prev->next = list_item;
-        }
-        curr->prev = list_item;
-    } else {
-        list_item->prev = NULL;
-    }
+        if (_iterator->forward) {
+            list_item->next = curr;
+            list_item->prev = curr->prev;
+            if (curr->prev) {
+                curr->prev->next = list_item;
+            }
+            curr->prev = list_item;
 
-    // is new item now the first one?
-    if (_list->first == curr) {
+            // is new item now the first one?
+            if (_list->first == curr) {
+                _list->first = list_item;
+            }
+        } else {
+            list_item->prev = curr;
+            list_item->next = curr->next;
+            if (curr->next) {
+                curr->next->prev = list_item;
+            }
+            curr->next = list_item;
+
+            // is new item now the last one?
+            if (_list->last == curr) {
+                _list->last = list_item;
+            }
+        }
+    } else {
+        // Not sure this code can ever be reached but leave it for now
+        // add to an empty list?
+        _iterator->curr = list_item;
         _list->first = list_item;
+        list_item->prev = NULL;
+        _list->last = list_item;
+        list_item->next = NULL;
     }
 
     _list->count++;
+
+    return 0;
 }
 
-void sypha_list_iterator_delete_current(SYPHA_LIST_ITERATOR iterator) {
+int sypha_list_iterator_delete_current(SYPHA_LIST_ITERATOR iterator) {
     struct _sypha_list_iterator * _iterator = (struct _sypha_list_iterator *) iterator;
     struct _sypha_list_item * curr = _iterator->curr;
     struct _sypha_list * _list = (struct _sypha_list *) _iterator->list;
     struct _sypha_list_item * curr_prev, * curr_next;
 
-    // Can't remove anything from initial state
-    if (_iterator->is_pristine) {
-        return;
-    }
-
-    // Empty list?
-    if (!curr) {
-        return;
+    // Can't remove anything from initial state, or an empty list
+    if (_iterator->is_pristine || !curr) {
+        return -1;
     }
 
     curr_prev = curr->prev;
@@ -342,12 +405,21 @@ void sypha_list_iterator_delete_current(SYPHA_LIST_ITERATOR iterator) {
     // Was the curr item either the first or last one?
     if (_list->first == curr) {
         _list->first = curr_next;
+        _iterator->curr = curr_next;
+        _iterator->is_pristine = 1;
     }
     if (_list->last == curr) {
         _list->last = curr_prev;
+        _iterator->curr = curr_prev;
     }
 
+    // free the item
+    free(curr->data);
+    free(curr);
+
     _list->count--;
+
+    return 0;
 }
 
 #if defined(__cplusplus)

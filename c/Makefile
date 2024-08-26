@@ -24,13 +24,17 @@ TARGET_SZ ?= 64
 TARGET_OS ?= linux
 
 C_COMPILER ?= gcc
+TEST_COMPILER ?= g++
 C_FLAGS :=
+TEST_FLAGS :=
 
 ifeq ($(dbg),1)
 	  C_FLAGS += -g -O0
+	  TEST_FLAGS += -g -O0
       BUILD_TYPE := debug
 else
 	  C_FLAGS += -O2
+	  TEST_FLAGS += -O2
       BUILD_TYPE := release
 endif
 
@@ -40,7 +44,9 @@ ALL_C_FLAGS += $(C_FLAGS)
 ALL_LDFLAGS :=
 
 INCLUDES  := -I./include
+TEST_INCLUDES := -I./include -Itest/include
 LIBRARIES :=
+TEST_LIBRARIES := -Lbin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE) -l:libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION)
 
 # Target rules
 all: clean-build
@@ -75,6 +81,7 @@ clean:
 	rm -fr out
 	rm -rf bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION)
 	rm -rf bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac.so.$(MAJOR_VERSION).$(MINOR_VERSION)
+	rm -rf bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac_test
 
 install:
 	mkdir -p $(INSTALL_DIR)/sypha
@@ -95,18 +102,22 @@ uninstall:
 
 out/test_main.o: test/src/test_main.cpp
 	mkdir -p out
-	g++ -I./include -Itest/include -o $@ -c $<
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
 
 out/test_env.o: test/src/test_env.cpp
 	mkdir -p out
-	g++ -I./include -Itest/include -o $@ -c $<
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
 
 out/test_opt.o: test/src/test_opt.cpp
 	mkdir -p out
-	g++ -I./include -Itest/include -o $@ -c $<
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
 
-test: out/test_main.o out/test_env.o out/test_opt.o 
-	g++ -I./include -Itest/include -o libsyphac_$@ $+ -Lbin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE) -l:libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION)
+out/test_list.o: test/src/test_list.cpp
+	mkdir -p out
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
+
+test: out/test_main.o out/test_env.o out/test_opt.o out/test_list.o
+	$(TEST_COMPILER) -o libsyphac_$@ $+ $(TEST_LIBRARIES)
 	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	mv libsyphac_$@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac_$@

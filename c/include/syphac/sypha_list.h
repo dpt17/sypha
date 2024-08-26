@@ -28,6 +28,8 @@
 #ifndef _SYPHA_LIST_H_
 #define _SYPHA_LIST_H_
 
+#include <stdlib.h>
+
 #if defined __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -55,27 +57,32 @@ extern void sypha_list_prepend_item(SYPHA_LIST list, void * data, size_t data_sz
 // convention of requiring a "next" call to get first item (e.g. positioned before first
 // item).
     // Forward iterator from beginning of the list
-extern SYPHA_LIST_ITERATOR sypha_list_get_iterator_front();
+extern SYPHA_LIST_ITERATOR sypha_list_get_iterator_front(SYPHA_LIST list);
     // Backward iterator from end of the list
-extern SYPHA_LIST_ITERATOR sypha_list_get_iterator_back();
+extern SYPHA_LIST_ITERATOR sypha_list_get_iterator_back(SYPHA_LIST list);
     // Release all iterator resources
 extern void sypha_list_destroy_iterator(SYPHA_LIST_ITERATOR iterator);
 
-// Move to "next" item in list from perspective of forward / backward iterator.
+// Get current item in list, returns NULL if empty list OR iterator if before first item
     // Returns the data and fills in its size to the data_sz param, returns NULL if at end-of-iterator
-extern void * sypha_list_iterator_next(SYPHA_LIST_ITERATOR iterator, size_t * data_sz);
+extern void * sypha_list_iterator_get(SYPHA_LIST_ITERATOR iterator, size_t * data_sz);
+
+// Move to "next" item in list from perspective of forward / backward iterator.
+    // Returns 0 if a move is made, < 0 if at end-of-iterator
+extern int sypha_list_iterator_next(SYPHA_LIST_ITERATOR iterator);
 
 // Move to "previous" item in list from perspective of forward / backward iterator
-    // Returns the data and fills in its size to the data_sz param, returns NULL if at beginning-of-iterator
-extern void * sypha_list_iterator_previous(SYPHA_LIST_ITERATOR iterator, size_t * data_sz);
+    // Returns 0 if a move is made, < 0 if at end-of-iterator
+extern int sypha_list_iterator_previous(SYPHA_LIST_ITERATOR iterator);
 
 // Adding / removing list items via the iterator
-    // Insert new item after current item
-extern void sypha_list_iterator_insert_after(SYPHA_LIST_ITERATOR iterator, void * data, size_t data_sz);
-    // Insert new item before current item
-extern void sypha_list_iterator_insert_before(SYPHA_LIST_ITERATOR iterator, void * data, size_t data_sz);
-    // Delete the current item
-extern void sypha_list_iterator_delete_current(SYPHA_LIST_ITERATOR iterator);
+    // Insert new item after current item, returns 0 if item added, otherwise < 0
+extern int sypha_list_iterator_insert_after(SYPHA_LIST_ITERATOR iterator, void * data, size_t data_sz);
+    // Insert new item before current item, returns 0 if item added, otherwise < 0
+extern int sypha_list_iterator_insert_before(SYPHA_LIST_ITERATOR iterator, void * data, size_t data_sz);
+    // Delete the current item, repositioning iterator to previous item to make a "next" call sane
+    // returns 0 if item removed, otherwise < 0
+extern int sypha_list_iterator_delete_current(SYPHA_LIST_ITERATOR iterator);
 
 #if defined __cplusplus
 }
