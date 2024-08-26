@@ -15,7 +15,7 @@
 # limitations under the License.
 
 MAJOR_VERSION=0
-MINOR_VERSION=1
+MINOR_VERSION=2
 
 INSTALL_DIR ?= /usr/local
 
@@ -24,13 +24,17 @@ TARGET_SZ ?= 64
 TARGET_OS ?= linux
 
 C_COMPILER ?= gcc
+TEST_COMPILER ?= g++
 C_FLAGS :=
+TEST_FLAGS :=
 
 ifeq ($(dbg),1)
 	  C_FLAGS += -g -O0
+	  TEST_FLAGS += -g -O0
       BUILD_TYPE := debug
 else
 	  C_FLAGS += -O2
+	  TEST_FLAGS += -O2
       BUILD_TYPE := release
 endif
 
@@ -40,7 +44,9 @@ ALL_C_FLAGS += $(C_FLAGS)
 ALL_LDFLAGS :=
 
 INCLUDES  := -I./include
+TEST_INCLUDES := -I./include -Itest/include
 LIBRARIES :=
+TEST_LIBRARIES := -Lbin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE) -l:libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION)
 
 # Target rules
 all: clean-build
@@ -57,12 +63,16 @@ out/sypha_env.o: src/sypha_env.c
 	mkdir -p out
 	$(C_COMPILER) $(INCLUDES) $(ALL_C_FLAGS) -o $@ -c $<
 
-libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o
+out/sypha_list.o: src/sypha_list.c
+	mkdir -p out
+	$(C_COMPILER) $(INCLUDES) $(ALL_C_FLAGS) -o $@ -c $<
+
+libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o out/sypha_list.o
 	ar cr $@ $+
 	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	mv $@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 
-libsyphac.so.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o
+libsyphac.so.$(MAJOR_VERSION).$(MINOR_VERSION): out/sypha_opt.o out/sypha_env.o out/sypha_list.o
 	$(C_COMPILER) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -shared -o $@ $+ $(LIBRARIES)
 	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
 	mv $@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
@@ -71,6 +81,7 @@ clean:
 	rm -fr out
 	rm -rf bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac.a.$(MAJOR_VERSION).$(MINOR_VERSION)
 	rm -rf bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac.so.$(MAJOR_VERSION).$(MINOR_VERSION)
+	rm -rf bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac_test
 
 install:
 	mkdir -p $(INSTALL_DIR)/sypha
@@ -86,3 +97,27 @@ uninstall:
 	rm -fr $(INSTALL_DIR)/sypha/include/syphac
 	rm -fr $(INSTALL_DIR)/sypha/lib/libsyphac.a
 	rm -fr $(INSTALL_DIR)/sypha/lib/libsyphac.so*
+
+# Test case sections.  Hard references to g++ here for doctest.
+
+out/test_main.o: test/src/test_main.cpp
+	mkdir -p out
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
+
+out/test_env.o: test/src/test_env.cpp
+	mkdir -p out
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
+
+out/test_opt.o: test/src/test_opt.cpp
+	mkdir -p out
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
+
+out/test_list.o: test/src/test_list.cpp
+	mkdir -p out
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
+
+test: out/test_main.o out/test_env.o out/test_opt.o out/test_list.o
+	$(TEST_COMPILER) -o libsyphac_$@ $+ $(TEST_LIBRARIES)
+	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+	mv libsyphac_$@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+	bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac_$@

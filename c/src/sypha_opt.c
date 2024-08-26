@@ -46,17 +46,13 @@ struct _sypha_opt_result {
 
 // Returns matching config or NULL if nothing found
 static struct _sypha_opt_config_item * sypha_opt_config_find(struct _sypha_opt_config_item * items, const char * token) {
-    struct _sypha_opt_config_item * result = NULL;
-
     while (items) {
         if (strcmp(items->short_name, token) == 0 || strcmp(items->long_name, token) == 0) {
-            result = items;
-            break;
+            return items;
         }
         items = items->next;
     }
-
-    return result;
+    return NULL;
 }
 
 SYPHA_OPT_CONFIG sypha_opt_config_add_param(SYPHA_OPT_CONFIG cfg, const char * short_name, const char * long_name, int is_flag, int is_required) {
@@ -128,7 +124,7 @@ static int sypha_validate_required_in_result(struct _sypha_opt_result * result, 
     // Go through config, see if each required param is present
     while (config) {
         if (config->is_required) {
-            if (!sypha_opt_parse_get(result, config->short_name)) {
+            if (!sypha_opt_parse_exist(result, config->short_name)) {
                 return 0;
             }
         }
@@ -186,11 +182,11 @@ SYPHA_OPT_PARSE_RESULT sypha_opt_parse_args(SYPHA_OPT_CONFIG cfg, int argc, char
                 }
                 if (last_result_item == NULL) {
                     result->items = result_item;
-                    last_result_item = result_item;
                 } else {
                     last_result_item->next = result_item;
                 }
-                last_needs_value = 1;
+                last_result_item = result_item;
+                last_needs_value = !config_item->is_flag;
                 continue;
             } else {
                 // unknown param
@@ -219,11 +215,11 @@ SYPHA_OPT_PARSE_RESULT sypha_opt_parse_args(SYPHA_OPT_CONFIG cfg, int argc, char
                 }
                 if (last_result_item == NULL) {
                     result->items = result_item;
-                    last_result_item = result_item;
                 } else {
                     last_result_item->next = result_item;
                 }
-                last_needs_value = 1;
+                last_result_item = result_item;
+                last_needs_value = !config_item->is_flag;
                 continue;
             } else {
                 // unknown param
@@ -289,6 +285,40 @@ void sypha_opt_parse_free(SYPHA_OPT_PARSE_RESULT parse_result) {
     free(opt_result);
 }
 
+static struct _sypha_opt_result_item * sypha_opt_parse_result_find(struct _sypha_opt_result_item * items, const char * name) {
+    while (items) {
+        if ((strcmp(name, items->short_name) == 0) || (strcmp(name, items->long_name) == 0)) {
+            return items;
+        }
+        items = items->next;
+    }
+    return NULL;
+}
+
+int sypha_opt_parse_exist(SYPHA_OPT_PARSE_RESULT parse_result, const char * name) {
+    struct _sypha_opt_result * result;
+
+    if (!(result = (struct _sypha_opt_result *) parse_result)) {
+        return 0;
+    }
+
+    return (sypha_opt_parse_result_find(result->items, name) != NULL);
+}
+
+const char * sypha_opt_parse_get_value(SYPHA_OPT_PARSE_RESULT parse_result, const char * name) {
+    struct _sypha_opt_result * result;
+    struct _sypha_opt_result_item * item;
+
+    if (!(result = (struct _sypha_opt_result *) parse_result)) {
+        return NULL;
+    }
+
+    item = sypha_opt_parse_result_find(result->items, name);
+
+    return ((item == NULL) ? NULL : item->value);
+}
+
+// Deprecated: switch to clearer sypha_opt_parse_exist and sypha_opt_parse_get_value
 const char * sypha_opt_parse_get(SYPHA_OPT_PARSE_RESULT parse_result, const char * name) {
     struct _sypha_opt_result * result;
     struct _sypha_opt_result_item * items;
