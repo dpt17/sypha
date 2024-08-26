@@ -24,13 +24,17 @@ TARGET_SZ ?= 64
 TARGET_OS ?= linux
 
 CPP_COMPILER ?= g++
+TEST_COMPILER ?= g++
 CPP_FLAGS :=
+TEST_FLAGS :=
 
 ifeq ($(dbg),1)
       CPP_FLAGS += -g -O0
+	  TEST_FLAGS += -g -O0
       BUILD_TYPE := debug
 else
       CPP_FLAGS += -O2
+	  TEST_FLAGS += -O2
       BUILD_TYPE := release
 endif
 
@@ -41,7 +45,9 @@ ALL_LDFLAGS :=
 ALL_LDFLAGS += $(ALL_CPP_FLAGS)
 
 INCLUDES  := -I./include -I/usr/include -I/usr/local/include -I/usr/local/sypha/include
+TEST_INCLUDES := -I./include -Itest/include
 LIBRARIES := -L/usr/local/sypha/lib -l:libsyphac.a
+TEST_LIBRARIES := -L/usr/local/sypha/lib -l:libsyphac.a -Lbin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE) -l:libsyphacpp.a.$(MAJOR_VERSION).$(MINOR_VERSION)
 ALL_CPP_FLAGS += --std=c++11
 
 # Target rules
@@ -84,3 +90,23 @@ uninstall:
 	rm -fr $(INSTALL_DIR)/sypha/include/syphacpp
 	rm -fr $(INSTALL_DIR)/sypha/lib/libsyphacpp.a
 	rm -fr $(INSTALL_DIR)/sypha/lib/libsyphacpp.so*
+
+# Test case sections
+
+out/test_main.o: test/src/test_main.cpp
+	mkdir -p out
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
+
+out/test_env.o: test/src/test_env.cpp
+	mkdir -p out
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
+
+out/test_opt.o: test/src/test_opt.cpp
+	mkdir -p out
+	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
+
+test: out/test_main.o out/test_env.o out/test_opt.o
+	$(TEST_COMPILER) -o libsyphac_$@ $+ $(TEST_LIBRARIES)
+	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+	mv libsyphac_$@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+	bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac_$@

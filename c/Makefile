@@ -98,7 +98,7 @@ uninstall:
 	rm -fr $(INSTALL_DIR)/sypha/lib/libsyphac.a
 	rm -fr $(INSTALL_DIR)/sypha/lib/libsyphac.so*
 
-# Test case sections.  Hard references to g++ here for doctest.
+# Test case sections
 
 out/test_main.o: test/src/test_main.cpp
 	mkdir -p out
