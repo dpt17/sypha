@@ -47,7 +47,14 @@ extern SYPHA_OPT_PARSE_RESULT sypha_opt_parse_args(SYPHA_OPT_CONFIG cfg, int arg
 // Release a parse result
 extern void sypha_opt_parse_free(SYPHA_OPT_PARSE_RESULT parse_result);
 
-// Lookup a specific param in result
+// Returns non-zero if param is present in the result. Better for flag checks.
+extern int sypha_opt_parse_exist(SYPHA_OPT_PARSE_RESULT parse_result, const char * name);
+
+// Lookup a specific param's value in result. Note: flags don't have a value.  Returns NULL if not found
+extern const char * sypha_opt_parse_get_value(SYPHA_OPT_PARSE_RESULT parse_result, const char * name);
+
+// Lookup a specific param in result.
+// DEPRECATED: vague about what it does
 extern const char * sypha_opt_parse_get(SYPHA_OPT_PARSE_RESULT parse_result, const char * name);
 
 // Grab any args that are valid, given the original config, but weren't associated with a param.
