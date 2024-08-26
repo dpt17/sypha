@@ -649,5 +649,98 @@ TEST_CASE("Modify list via iterator") {
         }
     }
 
+    SUBCASE("Delete all with iterator") {
+        SYPHA_LIST_ITERATOR iterator = sypha_list_get_iterator_front(list);
+        REQUIRE(iterator != NULL);
+
+        const char * token;
+
+        token = "fubar";
+        CHECK_EQ(sypha_list_iterator_insert_after(iterator, (void *) token, strlen(token) + 1), 0);
+
+        token = "bar";
+        CHECK_EQ(sypha_list_iterator_insert_after(iterator, (void *) token, strlen(token) + 1), 0);
+
+        token = "foo";
+        CHECK_EQ(sypha_list_iterator_insert_after(iterator, (void *) token, strlen(token) + 1), 0);
+
+        sypha_list_destroy_iterator(iterator);
+
+        SUBCASE("Delete all from start of list") {
+            SYPHA_LIST_ITERATOR iterator = sypha_list_get_iterator_front(list);
+            REQUIRE(iterator != NULL);
+
+            // fail because we're not at the first item
+            CHECK_LT(sypha_list_iterator_delete_current(iterator), 0);
+
+            // 3 successive deletes
+            CHECK_EQ(sypha_list_iterator_next(iterator), 0);
+            CHECK_EQ(sypha_list_iterator_delete_current(iterator), 0);
+            CHECK_EQ(sypha_list_iterator_next(iterator), 0);
+            CHECK_EQ(sypha_list_iterator_delete_current(iterator), 0);
+            CHECK_EQ(sypha_list_iterator_next(iterator), 0);
+            CHECK_EQ(sypha_list_iterator_delete_current(iterator), 0);
+
+            // fail because list is empty
+            CHECK_LT(sypha_list_iterator_delete_current(iterator), 0);
+
+            sypha_list_destroy_iterator(iterator);
+        }
+
+        SUBCASE("Delete all from end of list") {
+            SYPHA_LIST_ITERATOR iterator = sypha_list_get_iterator_front(list);
+            REQUIRE(iterator != NULL);
+
+            // fail because we're not at the first item
+            CHECK_LT(sypha_list_iterator_delete_current(iterator), 0);
+
+            CHECK_EQ(sypha_list_iterator_next(iterator), 0);
+            CHECK_EQ(sypha_list_iterator_next(iterator), 0);
+            CHECK_EQ(sypha_list_iterator_next(iterator), 0);
+
+            // 3 successive deletes
+            CHECK_EQ(sypha_list_iterator_delete_current(iterator), 0);
+            CHECK_EQ(sypha_list_iterator_delete_current(iterator), 0);
+            CHECK_EQ(sypha_list_iterator_delete_current(iterator), 0);
+
+            // fail because list is empty
+            CHECK_LT(sypha_list_iterator_delete_current(iterator), 0);
+
+            sypha_list_destroy_iterator(iterator);
+        }
+    }
+
+    SUBCASE("Delete with iterator") {
+
+        for (unsigned long long i=0;i < 50; i++) {
+            sypha_list_append_item(list, (void *) &i, sizeof(unsigned long long));
+        }
+
+        SUBCASE("Delete from middle of list") {
+            SYPHA_LIST_ITERATOR iterator = sypha_list_get_iterator_front(list);
+            REQUIRE(iterator != NULL);
+
+            for (int i=0;i < 10;i++) {
+                CHECK_EQ(sypha_list_iterator_next(iterator), 0);
+            }
+
+            for (int i=10;i < 30;i++) {
+                CHECK_EQ(sypha_list_iterator_next(iterator), 0);
+                CHECK_EQ(sypha_list_iterator_delete_current(iterator), 0);
+            }
+
+            unsigned long long * value;
+            size_t valueSz;
+
+            for (unsigned long long i=30;i < 50;i++) {
+                CHECK_EQ(sypha_list_iterator_next(iterator), 0);
+                value = (unsigned long long *) sypha_list_iterator_get(iterator, &valueSz);
+                CHECK_EQ(*value, i);
+            }
+
+            sypha_list_destroy_iterator(iterator);
+        }
+    }
+
     sypha_list_destroy(list);
 }
