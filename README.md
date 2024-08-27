@@ -5,7 +5,7 @@ git clone https://github.com/dpt17/sypha
 
 # libsyphac - C
 
-$ cd c
+$ cd syphac
 
 $ make
 
@@ -21,7 +21,7 @@ Add /usr/local/sypha/include to your include path and /usr/local/sypha/lib to yo
 
 Note: libsyphacpp depends on libsyphac and the latter should be built first
 
-$ cd cpp
+$ cd syphacpp
 
 $ make
 
