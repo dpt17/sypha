@@ -32,8 +32,8 @@ namespace sypha {
             } else if (!result) {
                 if (optConfig) {
                     sypha_opt_config_free(optConfig);
-                    throw new std::exception();
                 }
+                throw std::exception();
             }
         }
         m_optConfig = optConfig;
@@ -43,7 +43,7 @@ namespace sypha {
 
         if (!m_optParseResult) {
             sypha_opt_config_free(optConfig);
-            throw new std::exception();
+            throw std::exception();
         }
     }
 

@@ -15,7 +15,7 @@
 # limitations under the License.
 
 MAJOR_VERSION=0
-MINOR_VERSION=1
+MINOR_VERSION=2
 
 INSTALL_DIR ?= /usr/local
 
@@ -45,9 +45,9 @@ ALL_LDFLAGS :=
 ALL_LDFLAGS += $(ALL_CPP_FLAGS)
 
 INCLUDES  := -I./include -I/usr/include -I/usr/local/include -I/usr/local/sypha/include
-TEST_INCLUDES := -I./include -Itest/include
+TEST_INCLUDES := -I./include -Itest/include -I/usr/local/sypha/include
 LIBRARIES := -L/usr/local/sypha/lib -l:libsyphac.a
-TEST_LIBRARIES := -L/usr/local/sypha/lib -l:libsyphac.a -Lbin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE) -l:libsyphacpp.a.$(MAJOR_VERSION).$(MINOR_VERSION)
+TEST_LIBRARIES := -L/usr/local/sypha/lib -Lbin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE) -l:libsyphacpp.a.$(MAJOR_VERSION).$(MINOR_VERSION) -l:libsyphac.a
 ALL_CPP_FLAGS += --std=c++11
 
 # Target rules
@@ -75,6 +75,7 @@ clean:
 	rm -fr out
 	rm -rf bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphacpp.a.$(MAJOR_VERSION).$(MINOR_VERSION)
 	rm -rf bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphacpp.so.$(MAJOR_VERSION).$(MINOR_VERSION)
+	rm -rf bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphacpp_test
 
 install:
 	mkdir -p $(INSTALL_DIR)/sypha
@@ -106,7 +107,7 @@ out/test_opt.o: test/src/test_opt.cpp
 	$(TEST_COMPILER) $(TEST_INCLUDES) -o $@ -c $<
 
 test: out/test_main.o out/test_env.o out/test_opt.o
-	$(TEST_COMPILER) -o libsyphac_$@ $+ $(TEST_LIBRARIES)
+	$(TEST_COMPILER) -o libsyphacpp_$@ $+ $(TEST_LIBRARIES)
 	mkdir -p bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
-	mv libsyphac_$@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
-	bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphac_$@
+	mv libsyphacpp_$@ bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+	bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/libsyphacpp_$@

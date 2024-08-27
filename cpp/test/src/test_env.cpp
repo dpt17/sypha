@@ -16,3 +16,57 @@
 */
 
 #include "doctest.h"
+#include "syphacpp/sypha_env.hpp"
+#include <stdlib.h>
+
+// Note: these tests won't work on Windows but will on WSL
+
+using namespace sypha;
+
+TEST_CASE("Test .env load") {
+
+    // This isn't great, may need a better strategy
+    system("ln -fs test/data/test_0.env .env");
+
+    Env e = Env();
+
+    SUBCASE("Happy path file contents checks") {
+        std::string foo;
+        CHECK(e.get("foo", foo));
+        CHECK_EQ(foo.compare("bar"), 0);
+
+        std::string bar;
+        CHECK(e.get("bar", bar));
+        CHECK_EQ(bar.compare("baz"), 0);
+
+        std::string baz;
+        CHECK(e.get("baz", baz));
+        CHECK_EQ(baz.compare("1234567890abcdefghijklmnopqrstuvwxyz"), 0);
+    }
+
+    SUBCASE("Missing value") {
+        std::string fubar;
+
+        CHECK(!e.get("fubar", fubar));
+        
+        // now add it then read it back
+        e.set("fubar", "it works", 0);
+        CHECK(e.get("fubar", fubar));
+        CHECK_EQ(fubar.compare("it works"), 0);
+
+        // don't overwrite
+        e.set("fubar", "won't work", 0);
+        CHECK(e.get("fubar", fubar));
+        CHECK_EQ(fubar.compare("it works"), 0);
+
+        // overwrite
+        e.set("fubar", "it will work", 1);
+        CHECK(e.get("fubar", fubar));
+        CHECK_EQ(fubar.compare("it will work"), 0);
+    }
+
+    // This isn't great, may need a better strategy
+    system("rm -f .env");
+}
+
+// TODO: add some more devious cases later

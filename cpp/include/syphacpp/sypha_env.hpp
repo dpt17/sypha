@@ -42,7 +42,7 @@ namespace sypha {
                 }
             }
 
-            void set(const std::string & key, std::string & value, bool overwrite) {
+            void set(const std::string & key, const std::string & value, bool overwrite) {
                 sypha_env_set(key.c_str(), value.c_str(), (overwrite ? 1 : 0));
             }
     };
