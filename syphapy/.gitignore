@@ -1,2 +1,6 @@
 # Python garbage
 *__pycache__*
+
+# Don't include built packages for now
+dist/
+
