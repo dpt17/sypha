@@ -1,3 +1,5 @@
 # syphapy
 
-TODO: some profound future wisdom to be added here
+# processor
+
+An attempt at a generalized producer -> queue -> consumer pattern
