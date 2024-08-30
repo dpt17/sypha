@@ -35,7 +35,11 @@ Add /usr/local/sypha/include to your include path and /usr/local/sypha/lib to yo
 
 # syphapy - Python
 
-TODO
+$ cd syphapy
+
+$ poetry build
+
+Then add dependencies locally (see https://python-poetry.org/docs/cli/#add).  Will look to add a fancier install approach later.
 
 # tools
 
