@@ -16,6 +16,7 @@
 
 import logging
 
+import time
 from typing import Sequence
 from syphapy.processor import QueueProcessor, Item
 from threading import RLock
@@ -113,5 +114,12 @@ def test_producer_return_empty_list():
 def test_multi_producer_and_consumer():
     processor = MultiQueueProcessor()
     processor.start_all()
+    processor.stop_all()
+    assert processor.event_count == processor.processed_count
+
+def test_stress():
+    processor = MultiQueueProcessor(capacity=20480, producer_count=32, producer_throttle=0.1, consumer_count=16, consumer_throttle=0.1)
+    processor.start_all()
+    time.sleep(3)
     processor.stop_all()
     assert processor.event_count == processor.processed_count
