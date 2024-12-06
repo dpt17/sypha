@@ -1,0 +1,101 @@
+ProductID,ProductName,Category,Price,StockQuantity,ExpirationDate,Supplier
+P-001,Product-1,Beverages,29.08,43,2025-09-16,Supplier E
+P-002,Product-2,Fruits,40.69,347,2025-04-07,Supplier E
+P-003,Product-3,Personal Care,22.68,408,2025-10-22,Supplier E
+P-004,Product-4,Snacks,1.09,472,2025-05-18,Supplier C
+P-005,Product-5,Seafood,31.44,144,2025-08-22,Supplier C
+P-006,Product-6,Cleaning Supplies,0.53,115,2025-09-02,Supplier D
+P-007,Product-7,Personal Care,29.89,369,2025-01-15,Supplier D
+P-008,Product-8,Beverages,5.19,202,2025-07-31,Supplier C
+P-009,Product-9,Personal Care,25.59,385,2025-04-09,Supplier C
+P-010,Product-10,Seafood,4.32,109,2025-01-18,Supplier A
+P-011,Product-11,Fruits,30.98,338,2025-10-19,Supplier B
+P-012,Product-12,Dairy,45.62,323,2025-05-21,Supplier B
+P-013,Product-13,Personal Care,22.78,11,2025-01-05,Supplier C
+P-014,Product-14,Vegetables,13.88,82,2025-03-24,Supplier D
+P-015,Product-15,Cleaning Supplies,22.04,92,2025-03-18,Supplier A
+P-016,Product-16,Meat,28.91,90,2025-01-01,Supplier C
+P-017,Product-17,Bakery,16.75,266,2025-09-27,Supplier A
+P-018,Product-18,Snacks,12.49,341,2025-04-03,Supplier C
+P-019,Product-19,Meat,24.96,484,2025-07-03,Supplier C
+P-020,Product-20,Snacks,29.86,366,2024-12-02,Supplier C
+P-021,Product-21,Personal Care,39.54,478,2025-04-20,Supplier E
+P-022,Product-22,Vegetables,17.4,252,2025-01-26,Supplier C
+P-023,Product-23,Snacks,18.1,116,2025-10-05,Supplier C
+P-024,Product-24,Bakery,10.69,414,2024-12-07,Supplier C
+P-025,Product-25,Dairy,19.05,86,2025-10-01,Supplier C
+P-026,Product-26,Dairy,27.51,70,2025-05-29,Supplier C
+P-027,Product-27,Seafood,25.78,328,2025-07-14,Supplier C
+P-028,Product-28,Bakery,44.28,92,2025-09-07,Supplier A
+P-029,Product-29,Cleaning Supplies,30.85,166,2025-07-02,Supplier B
+P-030,Product-30,Personal Care,1.0,344,2025-10-16,Supplier E
+P-031,Product-31,Bakery,18.05,356,2025-06-08,Supplier A
+P-032,Product-32,Meat,29.46,419,2024-12-16,Supplier C
+P-033,Product-33,Fruits,9.99,23,2025-06-29,Supplier C
+P-034,Product-34,Seafood,45.89,70,2025-10-09,Supplier B
+P-035,Product-35,Dairy,18.97,253,2024-12-26,Supplier C
+P-036,Product-36,Bakery,20.22,174,2025-06-01,Supplier B
+P-037,Product-37,Dairy,25.0,118,2025-07-16,Supplier A
+P-038,Product-38,Cleaning Supplies,41.57,349,2025-05-23,Supplier C
+P-039,Product-39,Snacks,44.21,104,2025-06-04,Supplier A
+P-040,Product-40,Dairy,41.89,23,2025-07-05,Supplier A
+P-041,Product-41,Dairy,1.92,357,2025-10-15,Supplier D
+P-042,Product-42,Cleaning Supplies,10.96,330,2025-01-12,Supplier A
+P-043,Product-43,Cleaning Supplies,3.05,29,2024-11-04,Supplier E
+P-044,Product-44,Vegetables,46.59,164,2025-01-02,Supplier B
+P-045,Product-45,Fruits,30.76,97,2025-10-01,Supplier C
+P-046,Product-46,Bakery,23.78,141,2025-02-04,Supplier E
+P-047,Product-47,Fruits,10.36,198,2025-03-11,Supplier D
+P-048,Product-48,Vegetables,29.21,202,2025-07-21,Supplier A
+P-049,Product-49,Vegetables,49.83,339,2025-06-25,Supplier A
+P-050,Product-50,Dairy,8.12,428,2025-11-08,Supplier B
+P-051,Product-51,Meat,33.08,8,2025-11-19,Supplier C
+P-052,Product-52,Vegetables,11.36,126,2025-04-03,Supplier A
+P-053,Product-53,Seafood,48.37,111,2025-04-21,Supplier C
+P-054,Product-54,Personal Care,29.96,402,2025-02-13,Supplier B
+P-055,Product-55,Cleaning Supplies,22.13,80,2025-02-05,Supplier E
+P-056,Product-56,Bakery,49.5,80,2025-08-09,Supplier C
+P-057,Product-57,Fruits,26.16,415,2025-04-01,Supplier D
+P-058,Product-58,Dairy,21.36,102,2025-05-02,Supplier A
+P-059,Product-59,Personal Care,3.1,17,2025-09-03,Supplier B
+P-060,Product-60,Snacks,40.4,188,2025-05-06,Supplier B
+P-061,Product-61,Seafood,15.26,498,2025-04-01,Supplier C
+P-062,Product-62,Snacks,32.75,196,2025-02-08,Supplier C
+P-063,Product-63,Beverages,30.57,260,2025-07-14,Supplier C
+P-064,Product-64,Beverages,8.85,245,2025-03-17,Supplier E
+P-065,Product-65,Meat,25.51,249,2025-05-08,Supplier A
+P-066,Product-66,Fruits,44.5,250,2025-01-13,Supplier B
+P-067,Product-67,Seafood,2.52,288,2025-02-02,Supplier A
+P-068,Product-68,Dairy,46.21,248,2025-02-26,Supplier A
+P-069,Product-69,Meat,31.02,170,2024-12-14,Supplier E
+P-070,Product-70,Cleaning Supplies,27.74,445,2025-09-23,Supplier C
+P-071,Product-71,Vegetables,5.56,2,2025-08-20,Supplier D
+P-072,Product-72,Vegetables,8.92,149,2025-08-30,Supplier A
+P-073,Product-73,Snacks,28.42,64,2025-06-27,Supplier A
+P-074,Product-74,Seafood,42.37,44,2025-03-03,Supplier B
+P-075,Product-75,Bakery,21.44,497,2025-02-04,Supplier C
+P-076,Product-76,Personal Care,16.57,309,2024-12-15,Supplier A
+P-077,Product-77,Dairy,2.58,317,2025-03-03,Supplier B
+P-078,Product-78,Dairy,38.94,98,2025-07-02,Supplier A
+P-079,Product-79,Cleaning Supplies,27.12,47,2024-12-27,Supplier A
+P-080,Product-80,Cleaning Supplies,23.73,172,2025-04-19,Supplier A
+P-081,Product-81,Seafood,18.03,210,2025-09-17,Supplier B
+P-082,Product-82,Seafood,10.05,284,2025-06-02,Supplier C
+P-083,Product-83,Bakery,45.34,141,2024-11-02,Supplier C
+P-084,Product-84,Seafood,17.03,487,2025-07-05,Supplier D
+P-085,Product-85,Cleaning Supplies,33.03,417,2025-07-03,Supplier E
+P-086,Product-86,Seafood,41.12,148,2025-01-22,Supplier A
+P-087,Product-87,Snacks,27.33,270,2025-09-09,Supplier E
+P-088,Product-88,Bakery,7.64,434,2025-02-10,Supplier C
+P-089,Product-89,Beverages,43.98,238,2025-08-15,Supplier A
+P-090,Product-90,Snacks,14.96,21,2025-02-01,Supplier C
+P-091,Product-91,Dairy,3.7,76,2025-08-29,Supplier A
+P-092,Product-92,Beverages,49.56,297,2025-04-06,Supplier A
+P-093,Product-93,Meat,3.46,355,2025-10-27,Supplier D
+P-094,Product-94,Bakery,16.46,398,2025-11-23,Supplier E
+P-095,Product-95,Beverages,25.32,123,2024-11-18,Supplier E
+P-096,Product-96,Snacks,13.44,38,2025-05-02,Supplier B
+P-097,Product-97,Fruits,37.33,104,2025-09-01,Supplier C
+P-098,Product-98,Dairy,9.24,157,2025-04-08,Supplier C
+P-099,Product-99,Vegetables,29.11,408,2025-03-12,Supplier E
+P-100,Product-100,Personal Care,30.1,470,2025-07-05,Supplier D

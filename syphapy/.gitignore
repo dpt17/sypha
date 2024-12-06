@@ -4,3 +4,5 @@
 # Don't include built packages for now
 dist/
 
+# Don't include test code run artifacts to be included by default
+data/
