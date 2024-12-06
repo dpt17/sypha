@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "convert"
+version = "0.1.0"
+description = "Converts file between formats"
+authors = ["David Tuttle <david.p.tuttle17@gmail.com>"]
+license = "Apache License Version 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+syphapy = {git = "https://github.com/dpt17/sypha.git", subdirectory = "syphapy"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

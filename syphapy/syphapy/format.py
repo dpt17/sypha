@@ -88,7 +88,7 @@ class Formatter:
                 # Don't output an extra index columns that DataFrame may have added internally
                 self.df_obj.to_parquet(output_path, engine="pyarrow", index=False)
             case _:
-                format_type = Formatter.infer_format_type(input_path)
+                format_type = Formatter.infer_format_type(output_path)
 
                 if format_type is not None:
                     self.dump_file(output_path, format_type)
