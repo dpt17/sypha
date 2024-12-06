@@ -23,7 +23,7 @@ print_usage() {
     echo "Usage: $0 -i src_file -o dst_file"
 }
 
-while getopts ":i:o" option; do
+while getopts ":i:o:" option; do
   case $option in
     i)
       SRC="$OPTARG"
