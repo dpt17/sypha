@@ -322,7 +322,7 @@ pytest = "^8.3.2"
 type = "git"
 url = "https://github.com/dpt17/sypha.git"
 reference = "HEAD"
-resolved_reference = "81c7f3d63b5b1c85e4c855472d0214b8350a3344"
+resolved_reference = "a886657f3ffefd4203b681ea56c14544e8478434"
 subdirectory = "syphapy"
 
 [[package]]
